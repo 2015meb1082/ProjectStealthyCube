@@ -20,7 +20,6 @@ public class GuardMovement : MonoBehaviour
             wayPoints[i] = new Vector3(wayPoints[i].x,transform.position.y,wayPoints[i].z);
         }
         StartCoroutine(FollowPath(wayPoints));
-        print("Hello");
     }
 
     //Follow Path Coroutine
