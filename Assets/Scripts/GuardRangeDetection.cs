@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GuardRangeDetection : MonoBehaviour
 {
+    public static event System.Action OnPlayerSpotted;
+
     [SerializeField]
     private Light spotlight;
     [SerializeField]
@@ -12,6 +14,10 @@ public class GuardRangeDetection : MonoBehaviour
     private Transform playerTransform;
     [SerializeField]
     private LayerMask mask;
+
+    [SerializeField]
+    private float timeToSpot = 0.5f;
+    private float spotTimer;
 
     private Color originalColor;
 
@@ -26,11 +32,25 @@ public class GuardRangeDetection : MonoBehaviour
     {
         if (CanSeePlayer())
         {
-            spotlight.color = Color.red;
+            spotTimer += Time.deltaTime;
+            Color tempColor = Color.Lerp(originalColor, Color.red, spotTimer / timeToSpot);
+            spotlight.color = tempColor;
         }
         else {
+            spotTimer -= Time.deltaTime;
             spotlight.color = originalColor;
         }
+
+        spotTimer = Mathf.Clamp(spotTimer, 0, timeToSpot);
+
+        if (spotTimer >= timeToSpot) {
+            //It means player is spotted, invoke the delegate
+            if (OnPlayerSpotted != null) {
+                OnPlayerSpotted();
+            }
+            
+        }
+
     }
 
     private bool CanSeePlayer() {
